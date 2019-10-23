@@ -17,6 +17,8 @@ import static com.jogamp.opengl.GL.GL_DEPTH_BUFFER_BIT;
 import static com.jogamp.opengl.GL.GL_STATIC_DRAW;
 import static com.jogamp.opengl.GL.GL_TRIANGLES;
 import static com.jogamp.opengl.fixedfunc.GLPointerFunc.GL_VERTEX_ARRAY;
+import static java.lang.Math.cos;
+import static java.lang.Math.sin;
 
 public class JuliaFractal implements GLEventListener {
     private double theta = 0.0f;
@@ -25,8 +27,8 @@ public class JuliaFractal implements GLEventListener {
     private static final int WINDOW_HEIGHT = 600;
     private final int maxIter = 300;
     private final double zoom = 1;
-    private double cY, cX;
-
+    private double cX = -0.7;
+    private double cY = 0.27015;
 
     @Override
     public void init(GLAutoDrawable glAutoDrawable) {
@@ -48,11 +50,8 @@ public class JuliaFractal implements GLEventListener {
         BufferedImage image = new BufferedImage(w, h,
                 BufferedImage.TYPE_INT_RGB);
 
-        cX = -0.7;
-        cY = 0.27015;
         double moveX = 0, moveY = 0;
         double zx, zy;
-
         gl.glBegin(GL.GL_POINTS);
         for (int x = 0; x < w; x++) {
             for (int y = 0; y < h; y++) {
@@ -68,13 +67,13 @@ public class JuliaFractal implements GLEventListener {
                 int c = Color.HSBtoRGB((maxIter / i) % 1, 1, i > 0 ? 1 : 0);
                 image.setRGB(x, y, c);
                 Color color = new Color(c);
-                gl.glColor3f(color.getRed()/255.0f, color.getGreen()/255.0f, color.getBlue()/255.0f);
+                gl.glColor3f(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f);
 
                 gl.glVertex2d(getCoordinates(x, w), getCoordinates(y, h));
             }
         }
         gl.glEnd();
-
+        update();
 
     }
 
@@ -84,10 +83,13 @@ public class JuliaFractal implements GLEventListener {
 
     @Override
     public void reshape(GLAutoDrawable glAutoDrawable, int i, int i1, int i2, int i3) {
+
     }
 
     private void update() {
         theta += 0.01;
+        cX = sin(theta);
+        cY = cos(theta);
     }
 
 }
