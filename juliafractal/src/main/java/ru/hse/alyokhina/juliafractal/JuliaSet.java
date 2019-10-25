@@ -38,8 +38,9 @@ public class JuliaSet extends JPanel {
                     i--;
                 }
                 int c = Color.HSBtoRGB((maxIter / i) % 1, 1, i > 0 ? 1 : 0);
-                System.out.println(x + " " + y + " " + w + " " + h);
-                image.setRGB(x, y, c);
+
+                Color color = new Color((i / maxIter), 0, 0);
+                image.setRGB(x, y, color.getRGB());
             }
         }
         g.drawImage(image, 0, 0, null);

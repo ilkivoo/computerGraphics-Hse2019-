@@ -5,9 +5,10 @@ import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.util.Animator;
 import com.jogamp.opengl.util.FPSAnimator;
 
-public class FractalPainter{
+public class FractalPainter {
     private static String TITLE = "Fractal";
     private static final int WINDOW_WIDTH = 800;
     private static final int WINDOW_HEIGHT = 600;
@@ -18,27 +19,27 @@ public class FractalPainter{
     }
 
     public static void main(String[] args) {
-        GLProfile glp = GLProfile.getDefault();
-        GLCapabilities caps = new GLCapabilities(glp);
-        GLWindow window = GLWindow.create(caps);
+        GLProfile glProfile = GLProfile.get(GLProfile.GL3);
+        GLCapabilities glCapabilities = new GLCapabilities(glProfile);
 
-        final FPSAnimator animator = new FPSAnimator(window, FPS, true);
+        GLWindow window = GLWindow.create(glCapabilities);
+
+        window.setTitle("Julia Fractal");
+        window.setSize(1024, 768);
+
+        window.setVisible(true);
+
+        window.addGLEventListener(new JuliaFractal());
+
+        Animator animator = new Animator(window);
+        animator.start();
 
         window.addWindowListener(new WindowAdapter() {
             @Override
-            public void windowDestroyNotify(WindowEvent arg0) {
-                new Thread(() -> {
-                    if (animator.isStarted())
-                        animator.stop();
-                    System.exit(0);
-                }).start();
+            public void windowDestroyed(WindowEvent e) {
+                animator.stop();
+                System.exit(1);
             }
         });
-
-        window.addGLEventListener(new JuliaFractal());
-        window.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-        window.setTitle(TITLE);
-        window.setVisible(true);
-        animator.start();
     }
 }
