@@ -1,4 +1,4 @@
-package ru.hse.alyokhina.juliafractal;
+package ru.hse.alyokhina.juliafractal.image;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

@@ -1,10 +1,12 @@
 package ru.hse.alyokhina.juliafractal;
 
-import com.jogamp.opengl.*;
+import com.jogamp.opengl.GL3;
+import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.util.GLBuffers;
 import glm.mat.Mat4x4;
 import glm.vec._2.Vec2;
 import glm.vec._3.Vec3;
+import ru.hse.alyokhina.Fractal;
 import ru.hse.alyokhina.juliafractal.framework.Semantic;
 import uno.glsl.Program;
 
@@ -20,7 +22,9 @@ import static com.jogamp.opengl.GL.GL_STATIC_DRAW;
 import static com.jogamp.opengl.GL.GL_TRIANGLES;
 import static com.jogamp.opengl.GL.GL_UNSIGNED_SHORT;
 import static com.jogamp.opengl.GL2ES2.GL_STREAM_DRAW;
-import static com.jogamp.opengl.GL2ES3.*;
+import static com.jogamp.opengl.GL2ES3.GL_COLOR;
+import static com.jogamp.opengl.GL2ES3.GL_DEPTH;
+import static com.jogamp.opengl.GL2ES3.GL_UNIFORM_BUFFER;
 import static com.jogamp.opengl.math.FloatUtil.sin;
 import static glm.GlmKt.glm;
 import static uno.buffer.UtilKt.destroyBuffers;
@@ -30,7 +34,7 @@ import static uno.gl.GlErrorKt.checkError;
  * Created by elect on 04/03/17.
  */
 
-public class JuliaFractal implements GLEventListener {
+public class JuliaFractal extends Fractal {
 
     private float[] vertexData = {
             -10, -10, 0, 0, 0,
@@ -39,6 +43,30 @@ public class JuliaFractal implements GLEventListener {
             +10, +10, 0, 0, 0};
 
     private short[] elementData = {0, 2, 1, 1, 2, 3};
+    private final int width;
+    private final int height;
+
+    public JuliaFractal(final int w,
+                        final int h) {
+        width = w;
+        height = h;
+    }
+
+
+    @Override
+    public void incZoom(float del) {
+        zoom *= del;
+    }
+
+    @Override
+    public void setMoveX(float del) {
+        moveX = (del / zoom);
+    }
+
+    @Override
+    public void setMoveY(float del) {
+        moveY = (del / zoom);
+    }
 
     private interface Buffer {
 
@@ -58,7 +86,7 @@ public class JuliaFractal implements GLEventListener {
 
     private Program program;
 
-    private boolean auto = true;
+    private boolean auto = false;
     private float thetaX = 0;
     private float thetaY = 0;
     private int maxIter = 100;
@@ -239,5 +267,6 @@ public class JuliaFractal implements GLEventListener {
 
         destroyBuffers(vertexArrayName, bufferName, matBuffer, clearColor, clearDepth);
     }
+
 
 }
