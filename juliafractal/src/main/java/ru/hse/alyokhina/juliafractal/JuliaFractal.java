@@ -1,4 +1,5 @@
 package ru.hse.alyokhina.juliafractal;
+
 import com.jogamp.opengl.*;
 import com.jogamp.opengl.util.GLBuffers;
 import glm.mat.Mat4x4;
@@ -20,6 +21,7 @@ import static com.jogamp.opengl.GL.GL_TRIANGLES;
 import static com.jogamp.opengl.GL.GL_UNSIGNED_SHORT;
 import static com.jogamp.opengl.GL2ES2.GL_STREAM_DRAW;
 import static com.jogamp.opengl.GL2ES3.*;
+import static com.jogamp.opengl.math.FloatUtil.sin;
 import static glm.GlmKt.glm;
 import static uno.buffer.UtilKt.destroyBuffers;
 import static uno.gl.GlErrorKt.checkError;
@@ -56,6 +58,25 @@ public class JuliaFractal implements GLEventListener {
 
     private Program program;
 
+    private boolean auto = true;
+    private float thetaX = 0;
+    private float thetaY = 0;
+    private int maxIter = 100;
+    private float zoom = 2;
+    private float cX = -0.7f;
+    private float cY = 0.27015f;
+    private float moveX = 0;
+    private float moveY = 0;
+    private float R = 4;
+
+    private int maxIterUniform;
+    private int zoomUniform;
+    private int cXUniform;
+    private int cYUniform;
+    private int moveXUniform;
+    private int moveYUniform;
+    private int RUniform;
+
 
     @Override
     public void init(GLAutoDrawable drawable) {
@@ -67,6 +88,13 @@ public class JuliaFractal implements GLEventListener {
         initVertexArray(gl);
 
         initProgram(gl);
+        maxIterUniform = gl.glGetUniformLocation(program.name, "maxIter");
+        zoomUniform = gl.glGetUniformLocation(program.name, "zoom");
+        cXUniform = gl.glGetUniformLocation(program.name, "cX");
+        cYUniform = gl.glGetUniformLocation(program.name, "cY");
+        moveXUniform = gl.glGetUniformLocation(program.name, "moveX");
+        moveYUniform = gl.glGetUniformLocation(program.name, "moveY");
+        RUniform = gl.glGetUniformLocation(program.name, "R");
 
         gl.glEnable(GL_DEPTH_TEST);
     }
@@ -146,21 +174,25 @@ public class JuliaFractal implements GLEventListener {
 
         // view matrix
         {
-            Mat4x4 view = new Mat4x4();
-            view.to(matBuffer);
-
             gl.glBindBuffer(GL_UNIFORM_BUFFER, bufferName.get(Buffer.GLOBAL_MATRICES));
             gl.glBufferSubData(GL_UNIFORM_BUFFER, Mat4x4.SIZE, Mat4x4.SIZE, matBuffer);
             gl.glBindBuffer(GL_UNIFORM_BUFFER, 0);
         }
 
-        gl.glClearBufferfv(GL_COLOR, 0, clearColor.put(0, 0f).put(1, .33f).put(2, 0.66f).put(3, 1f));
+        gl.glClearBufferfv(GL_COLOR, 0, clearColor.put(0, 0f)
+                .put(1, .33f).put(2, 0.66f).put(3, 1f));
         gl.glClearBufferfv(GL_DEPTH, 0, clearDepth.put(0, 1f));
 
         gl.glUseProgram(program.name);
         gl.glBindVertexArray(vertexArrayName.get(0));
+        gl.glUniform1i(maxIterUniform, maxIter);
+        gl.glUniform1f(zoomUniform, zoom);
+        gl.glUniform1f(cXUniform, cX);
+        gl.glUniform1f(cYUniform, cY);
+        gl.glUniform1f(moveXUniform, moveX);
+        gl.glUniform1f(moveYUniform, moveY);
+        gl.glUniform1f(RUniform, R);
 
-        // model matrix
         {
 
 
@@ -168,7 +200,6 @@ public class JuliaFractal implements GLEventListener {
             model
                     .scale(0.5f)
                     .to(matBuffer);
-
             gl.glUniformMatrix4fv(program.get("model"), 1, false, matBuffer);
         }
 
@@ -176,7 +207,12 @@ public class JuliaFractal implements GLEventListener {
 
         gl.glUseProgram(0);
         gl.glBindVertexArray(0);
-
+        if (auto) {
+            thetaX += 0.01;
+            thetaY += 0.001;
+            cX = sin(thetaX);
+            cY = sin(thetaY);
+        }
         checkError(gl, "display");
     }
 
@@ -186,11 +222,9 @@ public class JuliaFractal implements GLEventListener {
         GL3 gl = drawable.getGL().getGL3();
 
         glm.ortho(-1f, 1f, -1f, 1f, 1f, -1f).to(matBuffer);
-
         gl.glBindBuffer(GL_UNIFORM_BUFFER, bufferName.get(Buffer.GLOBAL_MATRICES));
         gl.glBufferSubData(GL_UNIFORM_BUFFER, 0, Mat4x4.SIZE, matBuffer);
         gl.glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
         gl.glViewport(x, y, width, height);
     }
 
