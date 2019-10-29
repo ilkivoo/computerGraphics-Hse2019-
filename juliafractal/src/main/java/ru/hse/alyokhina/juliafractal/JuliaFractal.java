@@ -10,21 +10,42 @@ import ru.hse.alyokhina.Fractal;
 import ru.hse.alyokhina.juliafractal.framework.Semantic;
 import uno.glsl.Program;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferByte;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import static com.jogamp.opengl.GL.GL_ARRAY_BUFFER;
+import static com.jogamp.opengl.GL.GL_BGR;
 import static com.jogamp.opengl.GL.GL_DEPTH_TEST;
 import static com.jogamp.opengl.GL.GL_ELEMENT_ARRAY_BUFFER;
 import static com.jogamp.opengl.GL.GL_FLOAT;
+import static com.jogamp.opengl.GL.GL_LINEAR;
+import static com.jogamp.opengl.GL.GL_NEAREST;
+import static com.jogamp.opengl.GL.GL_REPEAT;
+import static com.jogamp.opengl.GL.GL_RGB;
+import static com.jogamp.opengl.GL.GL_RGBA;
+import static com.jogamp.opengl.GL.GL_RGBA32F;
 import static com.jogamp.opengl.GL.GL_STATIC_DRAW;
+import static com.jogamp.opengl.GL.GL_TEXTURE0;
+import static com.jogamp.opengl.GL.GL_TEXTURE_MAG_FILTER;
+import static com.jogamp.opengl.GL.GL_TEXTURE_MIN_FILTER;
+import static com.jogamp.opengl.GL.GL_TEXTURE_WRAP_S;
+import static com.jogamp.opengl.GL.GL_TEXTURE_WRAP_T;
 import static com.jogamp.opengl.GL.GL_TRIANGLES;
+import static com.jogamp.opengl.GL.GL_UNPACK_ALIGNMENT;
+import static com.jogamp.opengl.GL.GL_UNSIGNED_BYTE;
 import static com.jogamp.opengl.GL.GL_UNSIGNED_SHORT;
 import static com.jogamp.opengl.GL2ES2.GL_STREAM_DRAW;
 import static com.jogamp.opengl.GL2ES3.GL_COLOR;
 import static com.jogamp.opengl.GL2ES3.GL_DEPTH;
 import static com.jogamp.opengl.GL2ES3.GL_UNIFORM_BUFFER;
+import static com.jogamp.opengl.GL2GL3.GL_TEXTURE_1D;
 import static com.jogamp.opengl.math.FloatUtil.sin;
 import static glm.GlmKt.glm;
 import static uno.buffer.UtilKt.destroyBuffers;
@@ -41,6 +62,18 @@ public class JuliaFractal extends Fractal {
             -10, +10, 0, 0, 0,
             +10, -10, 0, 0, 0,
             +10, +10, 0, 0, 0};
+
+    private float[] colorData = {
+            0, 0, 0,
+            1, 1, 0,
+            0, 0, 1,
+            0, 1, 0,
+            1, 0, 0,
+            1, 0.7f, 0,
+            1, 1, 1,
+            0, 0, 1,
+            0, 0, 0.5f
+    };
 
     private short[] elementData = {0, 2, 1, 1, 2, 3};
     private final int width;
@@ -74,6 +107,10 @@ public class JuliaFractal extends Fractal {
     private int moveXUniform;
     private int moveYUniform;
     private int RUniform;
+    private int colorsUniform;
+    private int colorsCountUniform;
+
+    private int textureId;
 
 
     public JuliaFractal(final int w,
@@ -161,7 +198,10 @@ public class JuliaFractal extends Fractal {
         moveXUniform = gl.glGetUniformLocation(program.name, "moveX");
         moveYUniform = gl.glGetUniformLocation(program.name, "moveY");
         RUniform = gl.glGetUniformLocation(program.name, "R");
+        colorsUniform = gl.glGetUniformLocation(program.name, "colors");
+        colorsCountUniform = gl.glGetUniformLocation(program.name, "colorsCount");
 
+        textureId = initTexture(gl);
         gl.glEnable(GL_DEPTH_TEST);
     }
 
@@ -191,6 +231,38 @@ public class JuliaFractal extends Fractal {
         destroyBuffers(vertexBuffer, elementBuffer);
 
         checkError(gl, "initBuffers");
+    }
+
+    private int initTexture(GL3 gl) {
+        IntBuffer textures = GLBuffers.newDirectIntBuffer(1);
+        gl.glGenTextures(1, textures);
+
+        gl.glBindTexture(GL_TEXTURE_1D, textures.get(0));
+
+        gl.glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+        FloatBuffer colors = GLBuffers.newDirectFloatBuffer(colorData);
+
+        gl.glTexImage1D(
+                GL_TEXTURE_1D,
+                0,
+                GL_RGBA32F,
+                colors.capacity() / 3,
+                0,
+                GL_RGB,
+                GL_FLOAT,
+                colors
+        );
+
+        // texture sampling/filtering operation.
+        gl.glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        gl.glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        gl.glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        gl.glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+        gl.glBindTexture(GL_TEXTURE_1D, 0);
+
+        return textures.get(0);
     }
 
     private void initVertexArray(GL3 gl) {
@@ -258,6 +330,14 @@ public class JuliaFractal extends Fractal {
         gl.glUniform1f(moveXUniform, moveX);
         gl.glUniform1f(moveYUniform, moveY);
         gl.glUniform1f(RUniform, R);
+
+        int currentTextureUnit_ = 0;
+        gl.glUniform1i(colorsUniform, currentTextureUnit_);
+
+        gl.glActiveTexture(GL_TEXTURE0 + currentTextureUnit_);
+        gl.glBindTexture(GL_TEXTURE_1D, textureId);
+
+        gl.glUniform1i(colorsCountUniform, colorData.length / 3);
 
         {
 
