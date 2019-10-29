@@ -5,19 +5,11 @@ import com.jogamp.newt.event.MouseListener;
 
 public class FractalMouseListener implements MouseListener {
     private final Fractal fractal;
-
-    private final int width;
-    private final int height;
-
     private int curPositionX = 0;
     private int curPositionY = 0;
 
-    public FractalMouseListener(final Fractal fractal,
-                                final int width,
-                                final int height) {
+    public FractalMouseListener(final Fractal fractal) {
         this.fractal = fractal;
-        this.width = width;
-        this.height = height;
     }
 
     private void setPosition(int curPositionX, int curPositionY) {
@@ -57,24 +49,14 @@ public class FractalMouseListener implements MouseListener {
 
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
-        float delX = (mouseEvent.getX() - curPositionX) / 2.0f;
-        float delY = (mouseEvent.getY() - curPositionY) / 2.0f;
-        System.out.println(mouseEvent.getX() + " " + width);
-        System.out.println(mouseEvent.getY() + " " + height);
-        System.out.println(curPositionX + " " + delX + " " + curPositionY + " " + delY);
-        fractal.setMoveX(-1f);
-        fractal.setMoveY(-1f);
+        int x = mouseEvent.getX() - curPositionX;
+        int y = mouseEvent.getY() - curPositionY;
         setPosition(mouseEvent.getX(), mouseEvent.getY());
+        fractal.move(x, y);
     }
-
-
-    private float getCoordinate(int pos, int size) {
-        return (pos - size / 2.0f) / (2.0f * (float) size);
-    }
-
     @Override
     public void mouseWheelMoved(MouseEvent mouseEvent) {
-        System.out.println(1 + 0.1f * mouseEvent.getRotation()[1]);
+        fractal.incZoom(1 + 0.1f * mouseEvent.getRotation()[1]);
         setPosition(mouseEvent.getX(), mouseEvent.getY());
     }
 

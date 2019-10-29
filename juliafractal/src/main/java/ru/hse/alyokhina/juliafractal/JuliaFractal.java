@@ -46,36 +46,6 @@ public class JuliaFractal extends Fractal {
     private final int width;
     private final int height;
 
-    public JuliaFractal(final int w,
-                        final int h) {
-        width = w;
-        height = h;
-    }
-
-
-    @Override
-    public void incZoom(float del) {
-        zoom *= del;
-    }
-
-    @Override
-    public void setMoveX(float del) {
-        moveX = (del / zoom);
-    }
-
-    @Override
-    public void setMoveY(float del) {
-        moveY = (del / zoom);
-    }
-
-    private interface Buffer {
-
-        int VERTEX = 0;
-        int ELEMENT = 1;
-        int GLOBAL_MATRICES = 2;
-        int MAX = 3;
-    }
-
     private IntBuffer bufferName = GLBuffers.newDirectIntBuffer(Buffer.MAX);
     private IntBuffer vertexArrayName = GLBuffers.newDirectIntBuffer(1);
 
@@ -86,7 +56,7 @@ public class JuliaFractal extends Fractal {
 
     private Program program;
 
-    private boolean auto = false;
+    private boolean auto = true;
     private float thetaX = 0;
     private float thetaY = 0;
     private int maxIter = 100;
@@ -104,6 +74,74 @@ public class JuliaFractal extends Fractal {
     private int moveXUniform;
     private int moveYUniform;
     private int RUniform;
+
+
+    public JuliaFractal(final int w,
+                        final int h) {
+        width = w;
+        height = h;
+    }
+
+
+    @Override
+    public void incZoom(float del) {
+        zoom *= del;
+    }
+
+    @Override
+    public void move(float moveX, float moveY) {
+        this.moveX -= 2f * moveX / width / zoom;
+        this.moveY += 2f * moveY / height / zoom;
+    }
+
+    @Override
+    public void setMaxIter(int maxIter) {
+        this.maxIter = maxIter;
+    }
+
+    @Override
+    public int getMaxIter() {
+        return maxIter;
+    }
+
+    @Override
+    public void setR(float R) {
+        this.R = R;
+    }
+
+    @Override
+    public void revertAuto() {
+        this.auto = !auto;
+    }
+
+    public float getR() {
+        return R;
+    }
+
+    @Override
+    public boolean getAuto() {
+        return auto;
+    }
+
+    @Override
+    public void setParameterX(float x) {
+        this.cX = x;
+    }
+
+    @Override
+    public float getParameterX() {
+        return cX;
+    }
+
+    @Override
+    public void setParameterY(float y) {
+        this.cY = y;
+    }
+
+    @Override
+    public float getParameterY() {
+        return cY;
+    }
 
 
     @Override
@@ -268,5 +306,13 @@ public class JuliaFractal extends Fractal {
         destroyBuffers(vertexArrayName, bufferName, matBuffer, clearColor, clearDepth);
     }
 
+
+    private interface Buffer {
+
+        int VERTEX = 0;
+        int ELEMENT = 1;
+        int GLOBAL_MATRICES = 2;
+        int MAX = 3;
+    }
 
 }

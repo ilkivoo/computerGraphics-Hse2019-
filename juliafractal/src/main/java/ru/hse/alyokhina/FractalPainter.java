@@ -9,12 +9,14 @@ import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.util.Animator;
 import ru.hse.alyokhina.juliafractal.JuliaFractal;
 
+import javax.swing.*;
+
 public class FractalPainter {
     private static String TITLE = "Fractal";
     private static final int WINDOW_WIDTH = 800;
     private static final int WINDOW_HEIGHT = 600;
     private static final Fractal fractal = new JuliaFractal(WINDOW_WIDTH, WINDOW_HEIGHT);
-    private static final MouseListener mouseListener = new FractalMouseListener(fractal, WINDOW_WIDTH, WINDOW_HEIGHT);
+    private static final MouseListener mouseListener = new FractalMouseListener(fractal);
 
     static {
         GLProfile.initSingleton();
@@ -33,7 +35,6 @@ public class FractalPainter {
 
         window.addGLEventListener(fractal);
         window.addMouseListener(mouseListener);
-
         Animator animator = new Animator(window);
         animator.start();
 
@@ -44,5 +45,9 @@ public class FractalPainter {
                 System.exit(1);
             }
         });
+
+        JFrame frame = new FractalSettingsFrame(fractal, WINDOW_WIDTH, WINDOW_HEIGHT);
+        frame.setVisible(true);
+
     }
 }
