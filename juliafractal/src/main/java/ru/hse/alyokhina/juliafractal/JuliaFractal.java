@@ -10,26 +10,17 @@ import ru.hse.alyokhina.Fractal;
 import ru.hse.alyokhina.juliafractal.framework.Semantic;
 import uno.glsl.Program;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
 import static com.jogamp.opengl.GL.GL_ARRAY_BUFFER;
-import static com.jogamp.opengl.GL.GL_BGR;
 import static com.jogamp.opengl.GL.GL_DEPTH_TEST;
 import static com.jogamp.opengl.GL.GL_ELEMENT_ARRAY_BUFFER;
 import static com.jogamp.opengl.GL.GL_FLOAT;
 import static com.jogamp.opengl.GL.GL_LINEAR;
-import static com.jogamp.opengl.GL.GL_NEAREST;
 import static com.jogamp.opengl.GL.GL_REPEAT;
 import static com.jogamp.opengl.GL.GL_RGB;
-import static com.jogamp.opengl.GL.GL_RGBA;
 import static com.jogamp.opengl.GL.GL_RGBA32F;
 import static com.jogamp.opengl.GL.GL_STATIC_DRAW;
 import static com.jogamp.opengl.GL.GL_TEXTURE0;
@@ -39,7 +30,6 @@ import static com.jogamp.opengl.GL.GL_TEXTURE_WRAP_S;
 import static com.jogamp.opengl.GL.GL_TEXTURE_WRAP_T;
 import static com.jogamp.opengl.GL.GL_TRIANGLES;
 import static com.jogamp.opengl.GL.GL_UNPACK_ALIGNMENT;
-import static com.jogamp.opengl.GL.GL_UNSIGNED_BYTE;
 import static com.jogamp.opengl.GL.GL_UNSIGNED_SHORT;
 import static com.jogamp.opengl.GL2ES2.GL_STREAM_DRAW;
 import static com.jogamp.opengl.GL2ES3.GL_COLOR;
@@ -48,6 +38,7 @@ import static com.jogamp.opengl.GL2ES3.GL_UNIFORM_BUFFER;
 import static com.jogamp.opengl.GL2GL3.GL_TEXTURE_1D;
 import static com.jogamp.opengl.math.FloatUtil.sin;
 import static glm.GlmKt.glm;
+import static java.awt.Color.RED;
 import static uno.buffer.UtilKt.destroyBuffers;
 import static uno.gl.GlErrorKt.checkError;
 
@@ -64,15 +55,22 @@ public class JuliaFractal extends Fractal {
             +10, +10, 0, 0, 0};
 
     private float[] colorData = {
-            0, 0, 0,
-            1, 1, 0,
-            0, 0, 1,
-            0, 1, 0,
-            1, 0, 0,
-            1, 0.7f, 0,
-            1, 1, 1,
-            0, 0, 1,
-            0, 0, 0.5f
+            1.0f, 1.0f, 1.0f,
+            1.0f, 0.0f, 0.0f,
+            0.8862745098039215f, 0.3411764705882353f, 0.11764705882352941f,
+            1.0f, 0.4980392156862745f, 0.0f,
+            1.0f, 0.7843137254901961f, 0.0f,
+            1.0f, 1.0f, 0.0f,
+            0.7843137254901961f, 1.0f, 0.0f,
+            0.5882352941176471f, 1.0f, 0.0f,
+            0.0f, 1.0f, 0.0f,
+            0.5882352941176471f, 0.7490196078431373f, 0.2f,
+            0.0f, 0.7843137254901961f, 1.0f,
+            0.0f, 0.5882352941176471f, 1.0f,
+            0.0f, 0.39215686274509803f, 1.0f,
+            0.0f, 0.19607843137254902f, 1.0f,
+            0.0f, 0.0f, 1.0f,
+            0.29411764705882354f, 0.0f, 0.5098039215686274f
     };
 
     private short[] elementData = {0, 2, 1, 1, 2, 3};

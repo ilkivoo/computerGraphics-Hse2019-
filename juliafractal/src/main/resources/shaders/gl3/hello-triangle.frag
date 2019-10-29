@@ -32,7 +32,6 @@ float make(vec2 z) {
     return (i / maxIter);
 
 }
-
 void main()
 {
     float val = make(outPos);
