@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>ru.hse.alyokhina</groupId>
+    <artifactId>juliafractal</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>url1</id>
+            <url>https://jitpack.io</url>
+        </repository>
+        <repository>
+            <id>url2</id>
+            <url>https://dl.bintray.com/kotlin/kotlin-dev</url>
+        </repository>
+    </repositories>
+
+    <dependencies>
+
+        <dependency>
+            <groupId>org.jogamp.gluegen</groupId>
+            <artifactId>gluegen-rt-main</artifactId>
+            <version>2.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>one.util</groupId>
+            <artifactId>streamex</artifactId>
+            <version>0.6.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jogamp.jogl</groupId>
+            <artifactId>jogl-all-main</artifactId>
+            <version>2.3.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.webjars.npm</groupId>
+            <artifactId>gl-vec4</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.elect86</groupId>
+            <artifactId>glm</artifactId>
+            <version>471c2fd5d2002696e2721dde19fded16c01fab78</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.elect86</groupId>
+            <artifactId>uno-sdk</artifactId>
+            <version>0161a60cd1f9393d419f01660d225a81e0bd45e3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.kotlin-graphics</groupId>
+            <artifactId>uno-sdk</artifactId>
+            <version>c80ea0425a2913ecc2006d0fd475d7714028883c</version>
+        </dependency>
+    </dependencies>
+</project>
