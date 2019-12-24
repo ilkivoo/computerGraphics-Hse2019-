@@ -1,1 +1,1 @@
-const char * logl_root = "/home/ooalyokhina/computerGraphics-Hse2019-/ParallaxOcclusion";
+const char * logl_root = "/home/ooalyokhina/computerGraphics-Hse2019-/ParallaxOcclusionMapping";
